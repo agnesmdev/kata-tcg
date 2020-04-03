@@ -1,9 +1,13 @@
 import helpers.GameHelper
-import models.{DrawCards, NoPlayCard, ReceiveMana, RefillMana}
+import models._
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfter, GivenWhenThen, OptionValues}
 
 class GameAppSpec extends AnyFeatureSpec with GivenWhenThen with BeforeAndAfter with OptionValues {
+
+  before {
+    GameHelper.clear()
+  }
 
   Feature("TCG Game") {
     Scenario("With basic rules") {
@@ -50,6 +54,61 @@ class GameAppSpec extends AnyFeatureSpec with GivenWhenThen with BeforeAndAfter 
       val computerWinner = if (firstPlayerAtEnd.health <= 0) secondPlayerAtEnd else firstPlayerAtEnd
 
       assert(winner === computerWinner)
+    }
+
+    Scenario("With Bleeding Out") {
+      val player_1 = Player("Jean", first = true)
+      val player_2 = Player("Henry", first = false)
+
+      When("A player's deck is empty")
+      val emptyDeckPlayer = player_1.copy(deck = Deck(Seq(3, 4, 5).map(DamageCard)))
+      Game(emptyDeckPlayer, player_2).play()
+
+      Then("They take one damage for each card drawn")
+      (1 to GameHelper.getTotalTurns by 2).foreach { turn =>
+        val actionsAtTurn = GameHelper.getTurnActions(turn)
+        assert(actionsAtTurn.head === ReceiveMana(turn))
+        assert(actionsAtTurn(1) === RefillMana(turn))
+        assert(actionsAtTurn(2) === BleedingOut(turn))
+      }
+    }
+
+    Scenario("With Overload") {
+      val player_1 = Player("Marie", first = true)
+      val player_2 = Player("Isabelle", first = false)
+
+      When("A player's hand is full")
+      val fullHandPlayer = player_1.copy(hand = Hand(Seq(3, 4, 5, 5, 6).map(DamageCard)))
+      Game(fullHandPlayer, player_2).play()
+
+      Then("They discard the drawn card")
+      val actionsAtTurn1 = GameHelper.getTurnActions(1)
+      assert(actionsAtTurn1.head === ReceiveMana(1))
+      assert(actionsAtTurn1(1) === RefillMana(1))
+      assert(actionsAtTurn1(2) === DrawCards(1, 1))
+      assert(actionsAtTurn1(3) === Overload(1))
+    }
+
+    Scenario("With Dud Card") {
+      val player_1 = Player("Etienne", first = true)
+      val player_2 = Player("Paula", first = false)
+
+      When("A player's hand only contains 0 mana cards")
+      val fullHandPlayer = player_1.copy(hand = Hand(Seq(0, 0, 0).map(DamageCard)))
+      Game(fullHandPlayer, player_2).play()
+
+      Then("They play the 0 card")
+      val actionsAtTurn1 = GameHelper.getTurnActions(1)
+      assert(actionsAtTurn1.head === ReceiveMana(1))
+      assert(actionsAtTurn1(1) === RefillMana(1))
+      assert(actionsAtTurn1(2) === DrawCards(1, 1))
+
+      val playZeroCardActions = actionsAtTurn1.filter(_ === PlayCard(DamageCard(0), 1))
+      assert(playZeroCardActions.length === 3)
+
+      Then("They do 0 damage")
+      val zeroDamageActions = actionsAtTurn1.filter(_ === TakeDamage(0, 1))
+      assert(zeroDamageActions.length === 3)
     }
   }
 }

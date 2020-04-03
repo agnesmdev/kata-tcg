@@ -30,6 +30,10 @@ case class Player(name: String,
     Player(name, health, mana.useCard(card), deck, hand.useCard(card), bin.useCard(card), first)
   }
 
+  protected def discardCard: Player = {
+    Player(name, health, mana, deck, hand.useCard(hand.cards.last), bin.useCard(hand.cards.last), first)
+  }
+
   protected def takeDamage(damage: Int): Player = {
     Player(name, health - damage, mana, deck, hand, bin, first)
   }
@@ -44,6 +48,8 @@ object Player {
     case Some(RefillMana(_)) => takeActions(actions.tail, player.refillMana)
     case Some(PlayCard(card, _)) => takeActions(actions.tail, player.playCard(card))
     case Some(TakeDamage(damage, _)) => takeActions(actions.tail, player.takeDamage(damage))
+    case Some(BleedingOut(_)) => takeActions(actions.tail, player.takeDamage(1))
+    case Some(Overload(_)) => takeActions(actions.tail, player.discardCard)
     case Some(_) => takeActions(actions.tail, player)
   }
 }

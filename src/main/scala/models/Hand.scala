@@ -5,6 +5,8 @@ case class Hand(cards: Seq[Card] = Nil) {
 
   lazy val overview: String = cards.map(_.cost).mkString(" / ")
 
+  lazy val isFull: Boolean = cards.length >= 5
+
   def sortByCost: Seq[Card] = cards.sortBy(_.cost).reverse
 
   def draw(newCards: Seq[Card]): Hand = Hand(cards ++ newCards)

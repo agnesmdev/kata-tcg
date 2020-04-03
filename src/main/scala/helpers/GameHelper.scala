@@ -11,6 +11,11 @@ object GameHelper {
   private var actions = mutable.ArrayBuilder.make[Action]()
   private var states = mutable.ArrayBuilder.make[(Player, Player)]()
 
+  def clear(): Unit = {
+    actions = mutable.ArrayBuilder.make[Action]()
+    states = mutable.ArrayBuilder.make[(Player, Player)]()
+  }
+
   def manageActions(player: Player, newActions: Action*): Player = {
     actions ++= newActions
     Player.takeActions(newActions, player)
@@ -20,7 +25,7 @@ object GameHelper {
     val (firstPlayer, secondPlayer) = if (player_1.first) (player_1, player_2) else (player_2, player_1)
     states += ((firstPlayer, secondPlayer))
 
-    logger.debug(s"${firstPlayer.coloredName}: ${firstPlayer.health.toString.info} HP - ${secondPlayer.coloredName}: ${secondPlayer.health.toString.info} HP")
+    logger.info(s"${firstPlayer.coloredName}: ${firstPlayer.health.toString.info} HP - ${secondPlayer.coloredName}: ${secondPlayer.health.toString.info} HP")
     (player_1, player_2)
   }
 
@@ -40,6 +45,10 @@ object GameHelper {
 
   def getStateAtTurn(turn: Int): (Player, Player) = {
     states.result()(turn + 1)
+  }
+
+  def getTotalTurns: Int = {
+    actions.result().maxBy(_.turn).turn
   }
 
   def getFinalState: (Player, Player) = {

@@ -8,6 +8,6 @@ Implementation of the [TCG Kata](https://github.com/bkimminich/kata-tcg/) in Sca
 
 - [x] Preparation
 - [x] Basic Gameplay
-- [ ] Special Rules
+- [x] Special Rules
 - [ ] Healing
 - [ ] Minions

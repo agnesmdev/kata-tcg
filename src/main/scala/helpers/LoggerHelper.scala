@@ -1,8 +1,8 @@
 package helpers
 
-import com.typesafe.scalalogging.Logger
+import org.slf4j.{Logger, LoggerFactory}
 
 object LoggerHelper {
 
-  val logger: Logger = Logger("game")
+  val logger: Logger = LoggerFactory.getLogger("Game")
 }

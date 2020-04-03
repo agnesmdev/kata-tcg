@@ -19,3 +19,7 @@ case class NoPlayCard(turn: Int) extends Action
 case class TakeDamage(damage: Int, turn: Int) extends Action
 
 case class Win(turn: Int) extends Action
+
+case class BleedingOut(turn: Int) extends Action
+
+case class Overload(turn: Int) extends Action

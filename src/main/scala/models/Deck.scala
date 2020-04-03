@@ -8,9 +8,16 @@ case class Deck(cards: Seq[Card]) {
   lazy val isEmpty: Boolean = cards.isEmpty
 
   def draw(number: Int): (Seq[Card], Deck) = {
-    val randomCards = (1 to number).map(_ => Random.nextInt(cards.length))
-    val newCards = randomCards.map(cards(_))
-    (newCards, Deck(cards diff newCards))
+    val drawnCards = randomCards(cards, number)
+    (drawnCards, Deck(cards diff drawnCards))
+  }
+
+  @scala.annotation.tailrec
+  private def randomCards(cards: Seq[Card], number: Int, result: Seq[Card] = Nil): Seq[Card] = number match {
+    case 0 => result
+    case _ =>
+      val card = cards(Random.nextInt(cards.length))
+      randomCards(cards diff Seq(card), number - 1, result ++ Seq(card))
   }
 }
 

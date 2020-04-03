@@ -11,8 +11,8 @@ case class Game(player_1: Player, player_2: Player) {
     val (firstPlayer, secondPlayer) = if (player_1.first) (player_1, player_2) else (player_2, player_1)
     val (firstPlayerInit, secondPlayerInit) = (initHand(firstPlayer), initHand(secondPlayer))
 
-    logger.debug(s"First player is ${firstPlayerInit.coloredName}")
-    logger.debug(s"Second player is ${secondPlayerInit.coloredName}")
+    logger.info(s"First player is ${firstPlayerInit.coloredName}")
+    logger.info(s"Second player is ${secondPlayerInit.coloredName}")
     playTurns(firstPlayerInit, secondPlayerInit)
   }
 

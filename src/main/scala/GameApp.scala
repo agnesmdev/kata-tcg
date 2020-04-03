@@ -17,7 +17,7 @@ object GameApp {
     val game = Game(player_1, player_2)
     winner = game.play()
 
-    logger.debug(s"${winner.coloredName} has won!")
+    logger.info(s"${winner.coloredName} has won!")
   }
 
   def getWinner: Player = winner
